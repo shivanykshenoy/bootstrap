@@ -14,7 +14,8 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
   var defaultOptions = {
     placement: 'top',
     animation: true,
-    popupDelay: 0
+    popupDelay: 0,
+    popupCloseDelay: 500
   };
 
   // Default hide triggers for each show trigger
@@ -186,7 +187,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // Set the initial positioning.
               tooltip.css({ top: 0, left: 0, display: 'block' });
 
-              // Now we add it to the DOM because need some info about it. But it's not 
+              // Now we add it to the DOM because need some info about it. But it's not
               // visible yet anyway.
               if ( appendToBody ) {
                   $document.find( 'body' ).append( tooltip );
@@ -214,12 +215,12 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               $timeout.cancel( popupTimeout );
               popupTimeout = null;
 
-              // And now we remove it from the DOM. However, if we have animation, we 
+              // And now we remove it from the DOM. However, if we have animation, we
               // need to wait for it to expire beforehand.
               // FIXME: this is a placeholder for a port of the transitions library.
               if ( scope.tt_animation ) {
                 if (!transitionTimeout) {
-                  transitionTimeout = $timeout(removeTooltip, 500);
+                  transitionTimeout = $timeout(removeTooltip, scope.tt_popupCloseDelay || 500);
                 }
               } else {
                 removeTooltip();
@@ -267,6 +268,11 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             attrs.$observe( prefix+'PopupDelay', function ( val ) {
               var delay = parseInt( val, 10 );
               scope.tt_popupDelay = ! isNaN(delay) ? delay : options.popupDelay;
+            });
+
+            attrs.$observe( prefix+'PopupCloseDelay', function ( val ) {
+              var delay = parseInt( val, 10 );
+              scope.tt_popupCloseDelay = ! isNaN(delay) ? delay : options.popupCloseDelay;
             });
 
             var unregisterTriggers = function () {
